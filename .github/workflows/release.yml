@@ -26,15 +26,16 @@ jobs:
     - name: Get TAG
       run: |
         echo "release_tag=$(sed -n '1p' CHANGELOG.md)" >> $GITHUB_ENV
+        echo "release_name=jq" >> $GITHUB_ENV
         sed -i '1d' CHANGELOG.md
 
     - name: Go build
       run: |
-        CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./release/${{env.release_tag}}_mac_amd64
-        CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./release/${{env.release_tag}}_windowns_amd64
-        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./release/${{env.release_tag}}_linux_amd64
-        CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ./release/${{env.release_tag}}_linux_arm64
-        CGO_ENABLED=0 GOOS=android GOARCH=arm64 go build -o ./release/${{env.release_tag}}_termux_arm64
+        CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./release/${{env.release_name}}_${{env.release_tag}}_mac_amd64
+        CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./release/${{env.release_name}}_${{env.release_tag}}_windowns_amd64
+        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./release/${{env.release_name}}_${{env.release_tag}}_linux_amd64
+        CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ./release/${{env.release_name}}_${{env.release_tag}}_linux_arm64
+        CGO_ENABLED=0 GOOS=android GOARCH=arm64 go build -o ./release/${{env.release_name}}_${{env.release_tag}}_termux_arm64
 
 
         ls ./release/
@@ -42,13 +43,13 @@ jobs:
     - name: Upload App To Artifact
       uses: actions/upload-artifact@v3
       with:
-          name: ${{env.release_tag}}
+          name: ${{env.release_name}}_${{env.release_tag}}
           path: ${{ github.workspace }}/release/*
 
     - name: Release
       uses: softprops/action-gh-release@cd28b0f5ee8571b76cfdaa62a30d51d752317477
       with:
-          name: ${{ env.release_tag }}
+          name: ${{env.release_name}}_${{env.release_tag}}
           tag_name: ${{ env.release_tag }}
           body_path: ${{ github.workspace }}/CHANGELOG.md
           draft: false
