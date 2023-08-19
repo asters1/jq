@@ -75,5 +75,5 @@ func main() {
 	} else {
 		PrintHelp()
 	}
-	println(jstr_output)
+	fmt.Println(jstr_output)
 }
